@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: thor_arm_description
+    relative_path: urdf/thor_robot.urdf
+  srdf:
+    relative_path: config/thor.srdf
+  package_settings:
+    author_name: Misha
+    author_email: mishklgpmi@mail.ru
+    generated_timestamp: 1706804905
