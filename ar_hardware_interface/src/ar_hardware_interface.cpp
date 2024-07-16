@@ -109,24 +109,18 @@ namespace ar_hardware_interface
     std::vector<int16_t> data = m_modbus->ReadAnalogInput(0x01, 0x0001, 8);
     if (data.size() > 0)
     {
-      // std::cout << data.size() << std::endl;
-      float bigRotationPos = ((data[2] * 32768) + data[3]) / 100.f;
-
-      // std::cout << data[0] << " " << data[1] << std::endl;
-      RCLCPP_INFO(logger_, "Get position %f", bigRotationPos);
-
       // driver_.getJointPositions(actuator_positions_);
       for (size_t i = 0; i < info_.joints.size(); ++i)
       {
         if (i > 3)
         {
-          joint_positions_[i] = degToRad(0);
+          joint_positions_[i] = 0;
         }
         else
         {
           // apply offsets, convert from deg to rad for moveit
-          joint_positions_[i] = degToRad(((data[2 * i] * 32768) + data[2 * i + 1]) / 100.f /*actuator_positions_[i]*/ + joint_offsets_[i]);
-          std::cout << i << " " << joint_positions_[i] << std::endl;
+          joint_positions_[i] = ((data[2 * i] * 32768) + data[2 * i + 1]) / 100.f /*actuator_positions_[i]*/ + joint_offsets_[i];
+          //std::cout << i << " " << joint_positions_[i] << std::endl;
         }
       }
       std::string logInfo = "Joint Pos: ";
@@ -148,8 +142,7 @@ namespace ar_hardware_interface
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
       // convert from rad to deg, apply offsets
-      actuator_commands_[i] =
-          radToDeg(joint_position_commands_[i]) - joint_offsets_[i];
+      actuator_commands_[i] = joint_position_commands_[i] - joint_offsets_[i];
     }
     std::string logInfo = "Joint Cmd: ";
     for (size_t i = 0; i < info_.joints.size(); i++)
@@ -161,8 +154,8 @@ namespace ar_hardware_interface
     }
     RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
     std::cout << actuator_commands_[0] << std::endl;
-    m_modbus->WriteMultiAnalogOutput(0x01, 0x0001, {2}); // static_cast<int16_t>(actuator_commands_[0] * 100 + 32500
-    std::cout << actuator_commands_[0] * 100 + 32500 << std::endl;
+    m_modbus->WriteMultiAnalogOutput(0x01, 0x0001, {static_cast<int16_t>(actuator_commands_[0] * 100 + 16000)}); // static_cast<int16_t>(actuator_commands_[0] * 100 + 32500
+    //std::cout << actuator_commands_[0] * 100 + 32500 << std::endl;
     // driver_.update(actuator_commands_, actuator_positions_);
     return hardware_interface::return_type::OK;
   }
