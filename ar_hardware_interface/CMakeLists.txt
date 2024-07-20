@@ -21,11 +21,18 @@ endforeach()
 
 include_directories("include/io")
 include_directories("include/protocol")
+include_directories("header/")
+include_directories("libs/libmodbus-3.1.10/src/")
+link_directories("libs/libmodbus-3.1.10/src/.libs/")
 
 add_library(ar_hardware_interface SHARED 
   src/ar_hardware_interface.cpp
   include/io/SerialConnector.hpp src/io/SerialConnector.cpp include/protocol/ModbusMaster.hpp src/protocol/ModbusMaster.cpp
 )
+
+# ./configure --with-pic --enable-static --enable-shared=no
+
+target_link_libraries(ar_hardware_interface "modbus")
 
 target_compile_features(ar_hardware_interface PUBLIC cxx_std_17)
 target_include_directories(ar_hardware_interface PUBLIC

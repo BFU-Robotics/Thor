@@ -31,6 +31,21 @@
       </collision>
     </link>
 
+    <joint name="box_joint" type="fixed">
+      <origin xyz="-0.1 0 0.025" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="box_link"/>
+    </joint>
+
+    <link name="box_link">
+        <visual>
+          <geometry>
+            <box size="0.18 0.15 0.05"/>
+          </geometry>
+          <material name="filament"/>
+        </visual>
+    </link>
+
 
     <link name="link_1">
       <inertial>
@@ -58,7 +73,8 @@
       <parent link="base_link"/>
       <child link="link_1"/>
       <axis xyz="0 0 1"/>
-      <limit lower="-3.1415" upper="3.1415" effort="4" velocity="1" />
+      <!-- limits DONE -->
+      <limit lower="-1.5" upper="1.5" effort="4" velocity="1.1" />
     </joint>
     
     <link name="link_2">
@@ -77,7 +93,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes_thor/art2.STL" scale="0.001 0.001 0.001"/>
+          <mesh filename="file://$(find ar_description)/meshes_thor/art2.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
     </link>
@@ -87,7 +103,8 @@
       <parent link="link_1"/>
       <child link="link_2"/>
       <axis xyz="0 0 1"/>
-      <limit lower="-1.5707963267948966" upper="1.5707963267948966" effort="4" velocity="1" />
+      <!-- limits DONE -->
+      <limit lower="-0.4" upper="0.4" effort="4" velocity="1.1" />
     </joint>
 
     <link name="link_3">
@@ -115,8 +132,9 @@
       <origin xyz="0.160 0 0" rpy="0 0 0"/>
       <parent link="link_2"/>
       <child link="link_3"/>
-      <axis xyz="0 0 1"/>
-      <limit lower="-1.5707963267948966" upper="1.5707963267948966" effort="4" velocity="1" />
+      <axis xyz="0 0 -1"/>
+      <!-- limits DONE -->
+      <limit lower="-1" upper="1" effort="4" velocity="1.1" />
     </joint>
 
     <link name="link_4">
@@ -145,7 +163,8 @@
       <parent link="link_3"/>
       <child link="link_4"/>
       <axis xyz="0 0 1"/>
-      <limit lower="-3.1415" upper="3.1415" effort="4" velocity="1" />
+      <!-- limits DONE -->
+      <limit lower="-3.1" upper="3.1" effort="4" velocity="1.1" />
     </joint>
 
     <link name="link_5">
@@ -169,11 +188,13 @@
       </collision>
     </link>
 
+    <!-- Наклон -->
     <joint name="joint_5" type="revolute">
       <origin xyz="0 0 0.1" rpy="0 -1.5707963267948966 0"/>
       <parent link="link_4"/>
       <child link="link_5"/>
-      <axis xyz="0 0 1"/>
+      <axis xyz="0 0 -1"/>
+      <!-- limits DONE -->
       <limit lower="-1.5" upper="1.5" effort="4" velocity="1" />
     </joint>
 
@@ -198,21 +219,126 @@
       </collision>
     </link>
 
+    <!-- Поворот -->
     <joint name="joint_6" type="revolute">
       <origin xyz="0 0 0" rpy="0 1.5707963267948966 0"/>
       <parent link="link_5"/>
       <child link="link_6"/>
-      <axis xyz="0 0 1"/>
-      <limit lower="-1.57" upper="1.57" effort="4" velocity="1" />
+      <axis xyz="0 0 -1"/>
+       <!-- limits DONE -->
+      <limit lower="-3.1" upper="3.1" effort="4" velocity="1.1" />
     </joint>
 
-    <!-- center of the end effector mounting surface on link_6 -->
-    <!--<link name="ee_link" />
+    <link name="ee_link" />
     <joint name="ee_joint" type="fixed">
       <parent link="link_6" />
       <child link="ee_link" />
-      <origin xyz="0 0.5 0" rpy="0 0 0" />
-    </joint>-->
+      <origin xyz="0 0 0.06" rpy="0 0 0" />
+    </joint>
+
+    
+    <!-- Клешня -->
+    <joint name="gripper_base_joint" type="fixed">
+        <origin xyz="-0.016 0.0 0.008" rpy="1.5708 0.0 1.5708"/>
+        <parent link="ee_link"/>
+        <child link="gripper_base_link"/>
+    </joint>
+
+    
+    <link name="gripper_base_link">
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find ar_description)/meshes_thor/hand.stl"
+                    scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find ar_description)/meshes_thor/hand.stl"
+                    scale="0.001 0.001 0.001" />
+            </geometry>
+
+            <material name="filament"/>
+        </visual>
+
+        <inertial>
+            <mass value="0.11" />
+            <inertia ixx="17803724" iyy="21783168" izz="28014524" ixy="-414543.5" ixz="225471.4375" iyz="-1840743.875" />
+        </inertial>
+    </link>
+
+    <joint name="gripper_jaw1_joint" type="prismatic">
+        <parent link="gripper_base_link" />
+        <child link="gripper_jaw1_link" />
+        <origin rpy="0 0 0" xyz="0.05 0.02 0" />
+        <axis xyz="-0.5547 0.8321 0"/>
+        <limit effort="100" lower="0.0" upper="0.06" velocity="10" />
+        <dynamics damping="0.3" friction="0.5" />
+    </joint>
+
+    <joint name="gripper_jaw2_joint" type="prismatic">
+        <parent link="gripper_base_link" />
+        <child link="gripper_jaw2_link" />
+        <origin rpy="0 0 0" xyz="-0.05 0.02 0" />
+        <axis xyz="0.5547 0.8321 0"/>
+        <limit effort="100" lower="0.0" upper="0.06" velocity="10" />
+        <mimic joint="gripper_jaw1_joint" />
+        <dynamics damping="0.3" friction="0.5" />
+    </joint>
+
+    <link name="gripper_jaw1_link">
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find ar_description)/meshes_thor/finger.stl"
+                    scale="-0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find ar_description)/meshes_thor/finger.stl"
+                    scale="-0.001 0.001 0.001" />
+            </geometry>
+
+            <material name="filament"/>
+        </visual>
+
+        <inertial>
+            <mass value="0.01" />
+            <inertia ixx="3358780.25" iyy="627437.875" izz="3410634.5" ixy="-145110.265625" ixz="93.539124" iyz="1280.361816" />
+        </inertial>
+    </link>
+
+    <link name="gripper_jaw2_link">
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find ar_description)/meshes_thor/finger.stl"
+                    scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find ar_description)/meshes_thor/finger.stl"
+                    scale="0.001 0.001 0.001" />
+            </geometry>
+
+            <material name="filament"/>
+        </visual>
+
+        <inertial>
+            <mass value="0.01" />
+            <inertia ixx="3358780.25" iyy="627437.875" izz="3410634.5" ixy="-145110.265625" ixz="93.539124" iyz="1280.361816" />
+        </inertial>
+    </link>
+
 
 
   </xacro:macro>

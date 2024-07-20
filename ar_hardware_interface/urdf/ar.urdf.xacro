@@ -20,7 +20,8 @@
     joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets.yaml"
   />
 
-  <xacro:if value="$(arg include_gripper)">
+  
+  <!--<xacro:if value="$(arg include_gripper)">
     <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro"/>
     <xacro:include filename="$(find ar_description)/urdf/ar_gripper.ros2_control.xacro"/>
 
@@ -31,6 +32,6 @@
       plugin_name="ar_hardware_interface/ARServoGripperHWInterface"
       serial_port="$(arg arduino_serial_port)"
     />
-  </xacro:if>
+  </xacro:if>-->
 
 </robot>
