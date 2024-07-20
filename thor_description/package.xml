@@ -1,0 +1,20 @@
+<package format="3">
+  <name>thor_description</name>
+  <version>1.0.0</version>
+  <description>
+    URDF Description package for Thor
+  </description>
+  <license>MIT</license>
+
+  <author>mishklgpmi</author>
+  <maintainer email="mishklgpmi@mail.ru">mishklgpmi</maintainer>
+  
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>urdf</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

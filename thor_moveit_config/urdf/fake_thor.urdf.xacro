@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+  <xacro:include filename="$(find thor_description)/urdf/thor_macro.xacro"/>
+  <xacro:include filename="$(find thor_description)/urdf/thor_gripper_macro.xacro"/>
+  <xacro:include filename="$(find thor_description)/urdf/thor.ros2_control.xacro"/>
+  <xacro:include filename="$(find thor_description)/urdf/thor_gripper.ros2_control.xacro"/>
+
+  <link name="world" />
+  <xacro:thor_robot parent="world">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:thor_robot>
+  <xacro:thor_gripper parent="ee_link" />
+
+  <xacro:thor_ros2_control
+    name="THORFakeSystem"
+    plugin_name="mock_components/GenericSystem"
+    serial_port="/dev/ttyACM0"
+    calibrate="False"
+    joint_offset_parameters_file="$(find thor_hardware_interface)/config/joint_offsets.yaml"
+  />
+  <xacro:thor_gripper_ros2_control
+    name="THORGripperFakeSystem"
+    plugin_name="mock_components/GenericSystem"
+    serial_port="/dev/ttyUSB0"
+  />
+</robot>

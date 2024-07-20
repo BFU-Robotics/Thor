@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+
+  <xacro:include filename="$(find thor_moveit_config)/srdf/thor_macro.srdf.xacro"/>
+  <xacro:thor_srdf />
+
+  <xacro:include filename="$(find thor_moveit_config)/srdf/thor_gripper_macro.srdf.xacro"/>
+  <xacro:thor_gripper_srdf />
+
+
+</robot>

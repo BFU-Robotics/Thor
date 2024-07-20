@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+  <xacro:arg name="serial_port" default="/dev/ttyUSB0"/>
+  <xacro:arg name="arduino_serial_port" default="/dev/ttyUSB0"/>
+  <xacro:arg name="calibrate" default="True"/>
+  <xacro:arg name="include_gripper" default="true"/>
+  <xacro:include filename="$(find thor_description)/urdf/thor_macro.xacro"/>
+  <xacro:include filename="$(find thor_description)/urdf/thor.ros2_control.xacro"/>
+  
+  <link name="world" />
+  <xacro:thor_robot parent="world">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:thor_robot>
+
+  <xacro:thor_ros2_control
+    name="$(arg name)"
+    plugin_name="thor_hardware_interface/THORHardwareInterface"
+    serial_port="$(arg serial_port)"
+    calibrate="$(arg calibrate)"
+    joint_offset_parameters_file="$(find thor_hardware_interface)/config/joint_offsets.yaml"
+  />
+
+</robot>
