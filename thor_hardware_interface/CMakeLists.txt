@@ -19,7 +19,7 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-include_directories("header/")
+include_directories("include/")
 include_directories("libs/libmodbus-3.1.10/src/")
 link_directories("libs/libmodbus-3.1.10/src/.libs/")
 
