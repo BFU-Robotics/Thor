@@ -17,14 +17,15 @@ namespace thor_hardware_interface
     info_ = info;
     init_variables();
 
-    // НАСТРОЙКА ДРАЙВЕРА!!!!
-    // init motor driver
+    // Настройка последовательного порта (см. launch-файл)
     std::string serial_port = info_.hardware_parameters.at("serial_port");
-    RCLCPP_INFO(logger_, "serial port %s", serial_port.c_str());
-    m_modbusClient = new ModbusClient("/dev/ttyUSB0");
+    RCLCPP_INFO(logger_, "Последовательный порт %s", serial_port.c_str());
+    m_modbusClient = new ModbusClient(serial_port.c_str());
 
-    std::this_thread::sleep_for(std::chrono::microseconds(3000));
+    // Пауза для инициализации миконтроллера
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 
+    // Настройка шаговых двигателей
     m_stepper1 = new Stepper(0, m_modbusClient);
     m_stepper2 = new Stepper(1, m_modbusClient);
     m_stepper3 = new Stepper(2, m_modbusClient);
@@ -35,58 +36,48 @@ namespace thor_hardware_interface
     Stepper m_steppers[] = {*m_stepper1, *m_stepper2, *m_stepper3, *m_stepper4, *m_stepper5, *m_stepper6};
     m_group = new SteppersGroup(m_modbusClient, m_steppers);
     m_group->setMaxSpeedAll(2 * M_PI);
-    m_group->setAccelerationAll(20*M_PI);
+    m_group->setAccelerationAll(20 * M_PI);
 
+    // Настройка серво
     m_servo = new Servo(m_modbusClient);
     m_servo->setMaxSpeed(1);
     m_servo->setAcceleration(1);
 
-    // Пауза для инициализации контроллера Arduino
-    std::this_thread::sleep_for(std::chrono::seconds(4));
-
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  // НАСТРОЙКА ПЕРЕМЕННЫХ
   void THORHardwareInterface::init_variables()
   {
-    // resize vectors
+    // Resize векторов по кол-ву шарниров
     int num_joints = info_.joints.size();
-    std::cout << "NUM " << num_joints << std::endl;
     actuator_commands_.resize(num_joints);
     actuator_positions_.resize(num_joints);
     joint_positions_.resize(num_joints);
-    joint_velocities_.resize(num_joints);
-    joint_efforts_.resize(num_joints);
     joint_position_commands_.resize(num_joints);
-    joint_velocity_commands_.resize(num_joints);
-    joint_effort_commands_.resize(num_joints);
+    
+    // Чтение оффсетов из файла config/joint_offsets.yaml
     joint_offsets_.resize(num_joints);
     for (int i = 0; i < num_joints; ++i)
     {
-      joint_offsets_[i] =
-          std::stod(info_.joints[i].parameters["position_offset"]);
+      joint_offsets_[i] = std::stod(info_.joints[i].parameters["position_offset"]);
     }
   }
 
+  // Включение интерфейса
   hardware_interface::CallbackReturn THORHardwareInterface::on_activate(const rclcpp_lifecycle::State & /*previous_state*/)
   {
     RCLCPP_INFO(logger_, "Activating hardware interface...");
 
-    // calibrate joints if needed
+    // TODO Добавить калибровку
     bool calibrate = info_.hardware_parameters.at("calibrate") == "True";
     if (calibrate)
     {
-      // run calibration
       RCLCPP_INFO(logger_, "Running joint calibration...");
-      // driver_.calibrateJoints();
     }
 
-    // init position commands at current positions
-    // driver_.getJointPositions(actuator_positions_);
+    // Команды привести в соответствие с текущими положениями узлов
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
-      // apply offsets, convert from deg to rad for moveit
       joint_positions_[i] = degToRad(actuator_positions_[i] + joint_offsets_[i]);
       joint_position_commands_[i] = joint_positions_[i];
     }
@@ -94,12 +85,17 @@ namespace thor_hardware_interface
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
+  // Отключение интерфейса
   hardware_interface::CallbackReturn THORHardwareInterface::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/)
   {
     RCLCPP_INFO(logger_, "Deactivating hardware interface...");
+    
+    // Pass
+    
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
+  // Экспорт интерфейса состояния шарниров (их ищет JointStateController)
   std::vector<hardware_interface::StateInterface> THORHardwareInterface::export_state_interfaces()
   {
     std::vector<hardware_interface::StateInterface> state_interfaces;
@@ -108,44 +104,39 @@ namespace thor_hardware_interface
     {
       state_interfaces.emplace_back(info_.joints[i].name, "position", &joint_positions_[i]);
     }
-    state_interfaces.emplace_back(info_.joints[6].name, "velocity", &joint_velocities_[6]);
+    state_interfaces.emplace_back(info_.joints[6].name, "velocity", &joint_positions_[6]);
+
     return state_interfaces;
   }
 
+  // Экспорт интерфейса команд шарниров (их ищет JointTrajectoryController и GripperController)
   std::vector<hardware_interface::CommandInterface> THORHardwareInterface::export_command_interfaces()
   {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
-      command_interfaces.emplace_back(info_.joints[i].name, "position",
-                                      &joint_position_commands_[i]);
+      command_interfaces.emplace_back(info_.joints[i].name, "position", &joint_position_commands_[i]);
     }
-    //command_interfaces.emplace_back(info_.joints[6].name, "velocity",
-    //                                  &joint_position_commands_[i]);
     return command_interfaces;
   }
 
+  // Чтение состояния шарниров из микроконтроллера
   hardware_interface::return_type THORHardwareInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
     // Чтение положения узлов
     float *position = m_group->getCurrentPositionAll();
-    //for (int i = 0; i < STEPPERS_COUNT; i++)
-    //{
-        //std::cout << position[i] << std::endl;
-        joint_positions_[0] = degToRad(position[0])/k1;
-        joint_positions_[1] = degToRad(position[1])/k2;
-        joint_positions_[2] = degToRad(position[2])/k3;
-        joint_positions_[3] = degToRad(position[3])/k4;
-        joint_positions_[4] = degToRad(position[4])/k5;
-        joint_positions_[5] = degToRad(position[5])/k6;
-        float servo_pos = m_servo->getCurrentPosition();
-        joint_positions_[6] = angular_to_linear_pos(servo_pos);
-
-        std::cout << "RX " << servo_pos << " " << joint_positions_[6] << std::endl;
-    //}
-    
-    
-    /*
+    // Данные приходят в радианах, переводятся в градусы и делятся на передаточный коэффциент
+    joint_positions_[0] = degToRad(position[0])/k1;     
+    joint_positions_[1] = degToRad(position[1])/k2;
+    joint_positions_[2] = degToRad(position[2])/k3;
+    joint_positions_[3] = degToRad(position[3])/k4;
+    joint_positions_[4] = degToRad(position[4])/k5;
+    joint_positions_[5] = degToRad(position[5])/k6;
+    // Данные приходят в градусах, переводятся в метры
+    joint_positions_[6] = angular_to_linear_pos(m_servo->getCurrentPosition());
+   
+    /* 
+    // Отладка
     std::cout << "RX " << joint_positions_[0] << " " << 
                         joint_positions_[1] << " " << 
                         joint_positions_[2] << " " <<  
@@ -153,48 +144,33 @@ namespace thor_hardware_interface
                         joint_positions_[4] << " " << 
                         joint_positions_[5] << " " <<
                         joint_positions_[6] << std::endl;
-                        */
-    //std::cout << info_.joints[6].name << std::endl;
-                        
-                        
-
+    */
+    
     return hardware_interface::return_type::OK;
   }
 
+  // Запись команд в микроконтроллер
   hardware_interface::return_type THORHardwareInterface::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
 
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
-      // convert from rad to deg, apply offsets
       actuator_commands_[i] = joint_position_commands_[i] - joint_offsets_[i];
     }
-    std::string logInfo = "Joint Cmd: ";
-    for (size_t i = 0; i < info_.joints.size(); i++)
-    {
-      std::stringstream jointPositionStm;
-      jointPositionStm << std::fixed << std::setprecision(2)
-                       << radToDeg(joint_position_commands_[i]);
-      logInfo += info_.joints[i].name + ": " + jointPositionStm.str() + " | ";
-    }
-    RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
-
-    //actuator_commands_[4] = 0;
-    //actuator_commands_[5] = 0; 
-
-    
-    
-    /*std::cout << "TX " << actuator_commands_[0] << " " << 
+  
+    /*
+    // Отладка
+    std::cout << "TX " << actuator_commands_[0] << " " << 
                           actuator_commands_[1] << " " << 
                           actuator_commands_[2] << " " <<  
                           actuator_commands_[3] << " " << 
                           actuator_commands_[4] << " " << 
                           actuator_commands_[5] << " " <<
-                          actuator_commands_[6] << std::endl;*/
+                          actuator_commands_[6] << std::endl;
+    */
     
-                          
-                        
-
+    // TODO Сделать отправку данных одной командой
+    // Положение шарниров (в радианах + передаточный коэффициент)
     m_group->rotateAll(
                         k1*actuator_commands_[0], 
                         k2*actuator_commands_[1], 
@@ -203,15 +179,13 @@ namespace thor_hardware_interface
                         k5*actuator_commands_[4], 
                         k6*actuator_commands_[5]
                       );
-
-    //std::cout << "TX " << actuator_commands_[6] << " " << linear_to_angular_pos(actuator_commands_[6]) << std::endl;
+    // Положение серво (перевод в радианы)
     m_servo->rotate(linear_to_angular_pos(actuator_commands_[6]));
 
     return hardware_interface::return_type::OK;
   }
 
-} // namespace thor_hardware_interface
+}
 
 #include "pluginlib/class_list_macros.hpp"
-
 PLUGINLIB_EXPORT_CLASS(thor_hardware_interface::THORHardwareInterface, hardware_interface::SystemInterface)

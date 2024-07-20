@@ -448,8 +448,6 @@ int Stepper::getStatus()
     uint8_t *rotation_status = this->client->readBits(this->stepper_id + STEPPERS_COUNT * 3);
     uint8_t *calibration_status = this->client->readBits(this->stepper_id + STEPPERS_COUNT * 2);
 
-    int status;
-
     if (*calibration_status)
     {
         return CALIBRATION;
@@ -511,6 +509,11 @@ void SteppersGroup::setMaxSpeedAll(float rad_per_sec)
     }
 
     int success = this->client->writeRegisters(0, speed_in_uint_format, 2 * STEPPERS_COUNT);
+
+    if (success == -1)
+    {
+        std::cout << "Error writing register" << std::endl;
+    }
 };
 
 void SteppersGroup::setAccelerationAll(float rad_per_sec)
