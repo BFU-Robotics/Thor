@@ -4,12 +4,11 @@
   <xacro:arg name="arduino_serial_port" default="/dev/ttyUSB0"/>
   <xacro:arg name="calibrate" default="True"/>
   <xacro:arg name="include_gripper" default="true"/>
-  <xacro:include filename="$(find thor_description)/urdf/thor_macro.xacro"/>
+  <xacro:include filename="$(find thor_description)/urdf/thor.urdf.xacro"/>
   <xacro:include filename="$(find thor_description)/urdf/thor.ros2_control.xacro"/>
   
   <link name="world" />
-  <xacro:thor_robot parent="world">
-    <origin xyz="0 0 0" rpy="0 0 0" />
+  <xacro:thor_robot>
   </xacro:thor_robot>
 
   <xacro:thor_ros2_control

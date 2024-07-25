@@ -84,9 +84,9 @@ def generate_launch_description():
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
         PathJoinSubstitution(
-            [FindPackageShare("thor_description"), "urdf", "thor.urdf.xacro"]),
+            [FindPackageShare("thor_description"), "urdf", "thor.xacro"]),
         " ",
-        "name:=ar",
+        "name:=thor",
         " ",
         "include_gripper:=",
         include_gripper,
