@@ -63,8 +63,8 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "use_sim_time",
             default_value="False",
-            description="Make MoveIt use simulation time. This is needed "+\
-                "for trajectory planing in simulation.",
+            description="Make MoveIt use simulation time. This is needed " +
+            "for trajectory planing in simulation.",
         ))
     declared_arguments.append(
         DeclareLaunchArgument(
@@ -139,7 +139,8 @@ def generate_launch_description():
     ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
 
     # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("thor_moveit_config", "config/controllers.yaml")
+    controllers_yaml = load_yaml(
+        "thor_moveit_config", "config/controllers.yaml")
 
     moveit_controllers = {
         "moveit_simple_controller_manager":
@@ -150,6 +151,7 @@ def generate_launch_description():
 
     trajectory_execution = {
         "moveit_manage_controllers": False,
+        "trajectory_execution.execution_duration_monitoring": False,
         "trajectory_execution.allowed_execution_duration_scaling": 1.2,
         "trajectory_execution.allowed_goal_duration_margin": 0.5,
         "trajectory_execution.allowed_start_tolerance": 0.01,

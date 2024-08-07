@@ -431,11 +431,11 @@ Copyright (C) 2021 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/misha/ros2_ws/src/thor/ar_hardware_interface/libs/libmodbus-3.1.10'
+ac_pwd='/home/kir/bfurobotics/manipulator_thor/thor/thor_hardware_interface/libs/libmodbus-3.1.10'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/usr/bin/mkdir -p'
-AWK='mawk'
+AWK='gawk'
 test -n "$AWK" || AWK=awk
 # The default lists apply if the user does not specify any file.
 ac_need_defaults=:
@@ -958,17 +958,17 @@ S["am__tar"]="tar --format=posix -chf - \"$$tardir\""
 S["AMTAR"]="$${TAR-tar}"
 S["am__leading_dot"]="."
 S["SET_MAKE"]=""
-S["AWK"]="mawk"
+S["AWK"]="gawk"
 S["mkdir_p"]="$(MKDIR_P)"
 S["MKDIR_P"]="/usr/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]="strip"
-S["install_sh"]="${SHELL} /home/misha/ros2_ws/src/thor/ar_hardware_interface/libs/libmodbus-3.1.10/build-aux/install-sh"
-S["MAKEINFO"]="${SHELL} '/home/misha/ros2_ws/src/thor/ar_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' makeinfo"
-S["AUTOHEADER"]="${SHELL} '/home/misha/ros2_ws/src/thor/ar_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' autoheader"
-S["AUTOMAKE"]="${SHELL} '/home/misha/ros2_ws/src/thor/ar_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' automake-1.16"
-S["AUTOCONF"]="${SHELL} '/home/misha/ros2_ws/src/thor/ar_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' autoconf"
-S["ACLOCAL"]="${SHELL} '/home/misha/ros2_ws/src/thor/ar_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' aclocal-1.16"
+S["install_sh"]="${SHELL} /home/kir/bfurobotics/manipulator_thor/thor/thor_hardware_interface/libs/libmodbus-3.1.10/build-aux/install-sh"
+S["MAKEINFO"]="${SHELL} '/home/kir/bfurobotics/manipulator_thor/thor/thor_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' makeinfo"
+S["AUTOHEADER"]="${SHELL} '/home/kir/bfurobotics/manipulator_thor/thor/thor_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' autoheader"
+S["AUTOMAKE"]="${SHELL} '/home/kir/bfurobotics/manipulator_thor/thor/thor_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' automake-1.16"
+S["AUTOCONF"]="${SHELL} '/home/kir/bfurobotics/manipulator_thor/thor/thor_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' autoconf"
+S["ACLOCAL"]="${SHELL} '/home/kir/bfurobotics/manipulator_thor/thor/thor_hardware_interface/libs/libmodbus-3.1.10/build-aux/missing' aclocal-1.16"
 S["VERSION"]="3.1.10"
 S["PACKAGE"]="libmodbus"
 S["CYGPATH_W"]="echo"

@@ -1,6 +1,6 @@
 #! /bin/bash
 # Generated automatically by config.status (libmodbus) 3.1.10
-# Libtool was configured on host misha:
+# Libtool was configured on host kir-ThinkPad-T14-Gen-1:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 
 # Provide generalized library-building support services.

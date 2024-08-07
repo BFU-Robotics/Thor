@@ -35,7 +35,7 @@ namespace thor_hardware_interface
     m_servo = new Servo(m_modbusClient);
     Stepper m_steppers[] = {*m_stepper1, *m_stepper2, *m_stepper3, *m_stepper4, *m_stepper5, *m_stepper6};
     m_group = new SteppersGroup(m_modbusClient, m_steppers);
-    m_group->setMaxSpeedAll(2 * M_PI);
+    m_group->setMaxSpeedAll(10 * M_PI);
     m_group->setAccelerationAll(20 * M_PI);
 
     // Настройка серво
