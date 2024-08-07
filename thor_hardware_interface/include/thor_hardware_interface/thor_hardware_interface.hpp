@@ -46,7 +46,7 @@ namespace thor_hardware_interface
         SteppersGroup*  m_group;
 
         const float k1 = 5.0f;
-        const float k2 = 6.0f;
+        const float k2 = 30.0f;
         const float k3 = 30.0f;
         const float k4 = 2.0f;
         const float k5 = 2.0f;
